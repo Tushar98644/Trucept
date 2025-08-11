@@ -1,34 +1,28 @@
 from pptx import Presentation
 
-def say_hello():
-    print("Hello from a function!")
-
 def analyze_file(filename):
     print(f"Analyzing file: {filename}")
-    return f"Analysis complete for {filename}"
+    try:
+        presentation = Presentation(filename)
+        print(f"📊 Found {len(presentation.slides)} slides")
 
-def create_ppt():
-    prs = Presentation()
-    title_slide_layout = prs.slide_layouts[0]
-    slide = prs.slides.add_slide(title_slide_layout)
-    title = slide.shapes.title
-    subtitle = slide.placeholders[1]
-    title.text = "Hello, World!"
-    subtitle.text = "python-pptx was here!"
-    prs.save("test.pptx")
+        for slide_num,slide in enumerate(presentation.slides):
+            print(f"📄 Reading Slide {slide_num}:")
+
+            for shape in slide.shapes:
+                if hasattr(shape, "text") and shape.text.strip():
+                    print(f"   • {shape.text}")
+
+        return "File analyzed successfully"
+    
+    except Exception as error:
+        print(f"❌ Error reading file: {error}")
+        return "❌ Failed to read PowerPoint"
 
 def main():
     print("🚀 Starting PowerPoint Analyzer")
 
-    say_hello()
-
-    print("🚀 Creating PowerPoint")
-
-    create_ppt()
-
-    print("✅ Done!")
-
-    result = analyze_file("sample.pptx")
+    result = analyze_file("test.pptx")
     print(result)
 
     print("✅ Done!")
