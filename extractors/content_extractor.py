@@ -60,5 +60,4 @@ class ContentExtractor:
 
 def extract_presentation(filename: str) -> List[Dict]:
     extractor = ContentExtractor()
-    print(extractor.extract_content(filename))
     return extractor.extract_content(filename)
