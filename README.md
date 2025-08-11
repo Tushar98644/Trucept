@@ -61,9 +61,9 @@ python main.py path/to/presentation
 | Environment Variable | Description | Default |
 |---------------------|-------------|---------|
 | `GOOGLE_API_KEY` | Your Google GenAI API key | **Required** |
-| `GEMINI_MODEL` | Model version | `gemini-1.5-flash` |
-| `GEMINI_TEMPERATURE` | Sampling temperature | `0.1` |
-| `GEMINI_MAX_OUTPUT_TOKENS` | Maximum output tokens | `1500` |
+| `GEMINI_MODEL` | Model version | `gemini-2.5-flash` |
+| `GEMINI_TEMPERATURE` | Sampling temperature | `0` |
+| `GEMINI_MAX_OUTPUT_TOKENS` | Maximum output tokens | `20000` |
 
 ## Sample Output
 ```yaml
