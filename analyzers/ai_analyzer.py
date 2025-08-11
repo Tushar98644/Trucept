@@ -1,6 +1,7 @@
 from google import genai
 from google.genai import types
 from config.settings import settings
+from tenacity import retry, stop_after_attempt, wait_exponential
 from typing import List, Dict
 
 class AIAnalyzer:    
@@ -30,8 +31,15 @@ class AIAnalyzer:
         
         return chunks
     
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True
+    )
     def call_ai(self, prompt: str) -> str:
+        """Call AI with retry logic - 3 attempts with exponential backoff"""
         try:
+            print(f"🔄 Calling Gemini API...")
             response = self.client.models.generate_content(
                 model=settings.gemini_model,
                 contents=prompt,
@@ -43,7 +51,8 @@ class AIAnalyzer:
             return response.text if hasattr(response, 'text') else str(response)
         
         except Exception as e:
-            return f"❌ Error: {str(e)}"
+            print(f"⚠️ API call failed: {str(e)}")
+            raise 
     
     def analyze_with_genai(self, slides_content: List[Dict]) -> str:
         combined_text = ""
@@ -74,9 +83,14 @@ class AIAnalyzer:
         
         for i, chunk in enumerate(chunks, 1):
             print(f"📡 Analyzing chunk {i}/{len(chunks)} ({len(chunk)} chars)")
-            prompt = prompt_template + chunk
-            result = self.call_ai(prompt)
-            results.append(result)
+            try:
+                prompt = prompt_template + chunk
+                result = self.call_ai(prompt)
+                results.append(result)
+                print(f"✅ Chunk {i} completed successfully")
+            except Exception as e:
+                print(f"❌ Chunk {i} failed after 3 retries: {str(e)}")
+                results.append(f"❌ Chunk {i} analysis failed: {str(e)}")
         
         if len(results) == 1:
             return results[0]
