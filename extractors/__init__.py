@@ -1,5 +1,5 @@
-"""PowerPoint content extractor module"""
+"""Content Extraction Module"""
 
-from .content_extractor import PowerPointExtractor, extract_presentation
+from .content_extractor import extract_presentation
 
-__all__ = ['PowerPointExtractor', 'extract_presentation']
+__all__ = ['extract_presentation']
