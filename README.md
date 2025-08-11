@@ -79,6 +79,10 @@ Issue 1: Numerical Conflict
 
 Analysis results are automatically saved as structured markdown reports in the `results/` directory.
 
+## Documentation
+
+> **For developers**: See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for complete system design details and extension points.
+
 ## Contributing
 
 We welcome contributions! Please follow these steps:
