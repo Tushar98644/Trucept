@@ -1,5 +1,19 @@
 # System Architecture
 
+## Table of Contents
+
+- [Design Philosophy](#design-philosophy)
+- [Component Architecture](#component-architecture)
+- [Processing Pipeline](#processing-pipeline)
+- [Scalability Strategy](#scalability-strategy)
+- [Error Handling](#error-handling)
+- [Configuration Management](#configuration-management)
+- [Content Handler Architecture](#content-handler-architecture)
+- [Data Flow Architecture](#data-flow-architecture)
+- [Development Architecture](#development-architecture)
+- [Limitations](#limitations)
+- [Extension Points](#extension-points)
+
 ## Design Philosophy
 
 ### Core Principles
@@ -141,6 +155,7 @@ except Exception as e:
 ### CONFIGURATION MANAGEMENT
 
 Environment-Based Settings
+
 ```python
 class Settings(BaseSettings):
     google_api_key: SecretStr
@@ -151,20 +166,6 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 ```
-
-### PERFORMANCE OPTIMIZATIONS
-
-Processing Efficiency
-
-- Early Termination - Skip empty or invalid slides
-- Selective Extraction - Process only content-rich shapes
-- Handler Reuse - Single handler instances across slides
-
-API Optimizations
-
-- Single Client - Reuse connection across requests
-- Intelligent Batching - Optimal chunk sizes for API limits
-- Response Caching - Cache identical requests (future enhancement)
 
 ### CONTENT HANDLER ARCHITECTURE
 
@@ -189,40 +190,6 @@ Handler Characteristics
 - Stateless - No shared state between extractions
 - Focused - Single content type per handler
 - Extensible - Easy to add new content types
-
-### EXTENSION POINTS
-
-Adding New Content Types
-
-1. Add handler function
-
-```python
-def extract_video(shape) -> str:
-    return f"[Video: {shape.name}]"
-```
-
-2. Register in CONTENT_HANDLERS
-
-```python
-CONTENT_HANDLERS['video'] = extract_video
-```
-
-3. Update shape detection logic
-
-```python
-elif hasattr(shape, 'media_type') and 'video' in shape.media_type:
-    return 'video'
-```
-
-**Custom Analysis Rules**
-
-Extend AI Analyzer for domain-specific rules
-class CustomAnalyzer(AI Analyzer):
-
-```python
-    def add_custom_prompt(self, domain_rules: str):
-        self.base_prompt += f"\nAdditional Rules:\n{domain_rules}"
-```
 
 ### DATA FLOW ARCHITECTURE
 
@@ -258,3 +225,48 @@ Code Organization Principles
 - Dependency Injection - Configuration passed in, not hardcoded
 - Error Boundaries - Failures contained to specific components
 - Logging Strategy - Structured logging for debugging
+
+### Limitations
+
+- No Video/Audio Support - Cannot extract content from embedded videos or audio files
+- Embedded Object Limitations - Cannot process PDFs, Excel files, or other embedded documents
+- Cross-Chunk Context Loss - Each chunk analyzed independently, may miss inconsistencies spanning multiple chunks (e.g., slide 1 vs slide 49)
+- Single-Threaded Processing - Cannot process multiple presentations or chunks concurrently
+- No Caching - Repeated analysis of same content makes full API calls each time
+- Memory Limitations - Large presentations (100+ slides) may consume significant memory
+- No Partial Results - Complete analysis failure if any chunk processing fails
+- Network Timeout - No handling for slow network connections or timeouts
+
+### EXTENSION POINTS
+
+Adding New Content Types
+
+1. Add handler function
+
+```python
+def extract_video(shape) -> str:
+    return f"[Video: {shape.name}]"
+```
+
+2. Register in CONTENT_HANDLERS
+
+```python
+CONTENT_HANDLERS['video'] = extract_video
+```
+
+3. Update shape detection logic
+
+```python
+elif hasattr(shape, 'media_type') and 'video' in shape.media_type:
+    return 'video'
+```
+
+**Custom Analysis Rules**
+
+Extend AI Analyzer for domain-specific rules
+class CustomAnalyzer(AI Analyzer):
+
+```python
+    def add_custom_prompt(self, domain_rules: str):
+        self.base_prompt += f"\nAdditional Rules:\n{domain_rules}"
+```
