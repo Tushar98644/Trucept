@@ -77,7 +77,7 @@ def write_results_to_markdown(input_filename: str, ai_results: str, slides_conte
     content.append("|-------|---------------|")
     for slide in slides_content:
         slide_num = slide['slide_number']
-        elements = slide.get('text_elements', 0)
+        elements = slide.get('total_elements', 0)
         content.append(f"| {slide_num} | {elements} |")
     content.append("")
     
