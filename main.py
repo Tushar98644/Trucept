@@ -1,37 +1,15 @@
 import os
-from pptx import Presentation
 from google import genai
 from google.genai import types
 
+from extractors import extract_presentation
+
 def setup_genai_client():
     """Setup Google GenAI client with your API key"""
-    
+
     api_key = os.getenv("GENAI_API_KEY") 
     client = genai.Client(api_key=api_key)
     return client
-
-def extract_slide_content(filename):
-    """Extract content from PowerPoint slides"""
-    print(f"📁 Extracting content from {filename}...")
-    
-    presentation = Presentation(filename)
-    slides_content = []
-    
-    for slide_num, slide in enumerate(presentation.slides, 1):
-        slide_text = []
-        for shape in slide.shapes:
-            if hasattr(shape, "text") and shape.text.strip():
-                slide_text.append(shape.text.strip())
-        
-        slide_content = '\n'.join(slide_text) if slide_text else "[No text content]"
-        slides_content.append({
-            'slide_number': slide_num,
-            'content': slide_content
-        })
-        
-        print(f"📄 Slide {slide_num}: {len(slide_text)} text elements")
-    
-    return slides_content
 
 def analyze_with_genai(client, slides_content):
     """Use Google GenAI to detect inconsistencies"""
@@ -105,7 +83,7 @@ def main():
     filename = "test.pptx"
     
     try:
-        slides_content = extract_slide_content(filename)
+        slides_content = extract_presentation(filename)
         print(f"✅ Extracted content from {len(slides_content)} slides")
         
         ai_results = analyze_with_genai(client, slides_content)
