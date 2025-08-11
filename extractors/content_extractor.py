@@ -40,7 +40,8 @@ class PowerPointExtractor:
                 'content': content,
                 'text_elements': len(slide_text)
             })
-        
+
+        print(f"✅ Extracted content from {len(slides_content)} slides: {slides_content}") 
         return slides_content
 
 def extract_presentation(filename: str) -> List[Dict]:
