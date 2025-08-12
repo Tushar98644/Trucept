@@ -2,8 +2,8 @@ import sys
 import os
 from datetime import datetime
 from extractors import extract_presentation
-from analyzers import analyze_inconsistencies
 from config.settings import settings
+from workflows import analyze_with_langgraph
 
 def main():
     print("🚀 AI-Powered PowerPoint Inconsistency Detector")
@@ -30,7 +30,7 @@ def main():
         slides_content = extract_presentation(filename)
         
         print("\n🤖 Analyzing with Google Gemini...")
-        ai_results = analyze_inconsistencies(slides_content)
+        ai_results = analyze_with_langgraph(slides_content)
         
         print(ai_results)
         
